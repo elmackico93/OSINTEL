@@ -1,2 +1,1 @@
-# OSINTEL
- 
+# Law Enforcement OSINT Toolkit

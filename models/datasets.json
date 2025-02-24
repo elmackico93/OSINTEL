@@ -1,0 +1,23 @@
+{
+    "datasets": {
+        "cybercrime": [
+            {
+                "name": "Cyber Threat Intelligence",
+                "url": "https://raw.githubusercontent.com/datasets/cyber-security/master/threat-intelligence.csv",
+                "format": "csv"
+            }
+        ],
+        "facial_recognition": [
+            {
+                "name": "Interpol Wanted Criminals",
+                "url": "https://www.interpol.int/en/How-we-work/Notices/View-Yellow-Notices",
+                "format": "image"
+            },
+            {
+                "name": "FBI Most Wanted",
+                "url": "https://www.fbi.gov/wanted",
+                "format": "image"
+            }
+        ]
+    }
+}
