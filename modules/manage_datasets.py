@@ -1,6 +1,10 @@
+# modules/manage_datasets.py
+
 import json
 
 DATASET_CONFIG_FILE = "models/datasets.json"
+
+description = "Dataset Manager (Add/Remove OSINT Datasets)"
 
 def load_datasets():
     """Loads dataset configurations dynamically."""
@@ -37,7 +41,7 @@ def add_dataset():
     print(f"✅ Dataset '{name}' added successfully!")
 
 def run():
-    """CLI menu for dataset management."""
+    """Main function to run the dataset manager."""
     print("📂 OSINTEL Dataset Manager")
     print("1. Add new dataset")
     print("2. View existing datasets")

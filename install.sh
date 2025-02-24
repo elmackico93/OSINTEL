@@ -1,152 +1,138 @@
 #!/bin/bash
 
 # 🚀 OSINTEL INSTALLATION SCRIPT 🚀
-# Fully Interactive, Animated, & Self-Repairing Setup with English & Italian Support
+# Fully Interactive, Animated, & Self-Repairing Setup for All Systems
 
-# Detect System Language
-LANGUAGE=$(echo $LANG | cut -d'_' -f1)
-
-# Define Texts for English and Italian
-if [ "$LANGUAGE" == "it" ]; then
-    TXT_BANNER="🔍 OSINTEL - Strumento OSINT per le Forze dell'Ordine"
-    TXT_CHECK_SYSTEM="🔍 Controllo della compatibilità del sistema..."
-    TXT_INSTALL_PYTHON="❌ Python3 non trovato! Installazione in corso..."
-    TXT_PYTHON_FOUND="✅ Python3 trovato!"
-    TXT_INSTALL_PIP="❌ Pip non trovato! Installazione in corso..."
-    TXT_PIP_FOUND="✅ Pip trovato!"
-    TXT_INSTALL_VENV="❌ Il modulo dell'ambiente virtuale non è presente! Installazione..."
-    TXT_VENV_FOUND="✅ Supporto per ambiente virtuale rilevato!"
-    TXT_SETTING_VENV="⚙️ Creazione dell'ambiente virtuale..."
-    TXT_VENV_ACTIVATED="✅ Ambiente virtuale attivato."
-    TXT_INSTALLING_LIBS="📦 Installazione delle librerie Python richieste..."
-    TXT_VERIFICATION="🔎 Verifica dell'installazione..."
-    TXT_SUCCESS="✅ Tutti i controlli di sistema superati. OSINTEL è completamente installato!"
-    TXT_LAUNCH_PROMPT="🚀 OSINTEL è installato! Vuoi avviarlo ora? (Y/N)"
-    TXT_LAUNCHING="🚀 Avvio del sistema OSINTEL..."
-    TXT_COMPLETED="✅ Installazione completata. Esegui 'python3 core.py' in qualsiasi momento per avviare OSINTEL."
-    TXT_ERROR="❌ Errore: Alcune dipendenze non sono state installate. Riprova."
-else
-    TXT_BANNER="🔍 OSINTEL - Law Enforcement OSINT Toolkit"
-    TXT_CHECK_SYSTEM="🔍 Checking system compatibility..."
-    TXT_INSTALL_PYTHON="❌ Python3 not found! Installing..."
-    TXT_PYTHON_FOUND="✅ Python3 found!"
-    TXT_INSTALL_PIP="❌ Pip not found! Installing..."
-    TXT_PIP_FOUND="✅ Pip found!"
-    TXT_INSTALL_VENV="❌ Virtual environment module missing! Installing..."
-    TXT_VENV_FOUND="✅ Virtual environment support detected!"
-    TXT_SETTING_VENV="⚙️ Setting up virtual environment..."
-    TXT_VENV_ACTIVATED="✅ Virtual environment activated."
-    TXT_INSTALLING_LIBS="📦 Installing required Python libraries..."
-    TXT_VERIFICATION="🔎 Verifying installation..."
-    TXT_SUCCESS="✅ All system checks passed. OSINTEL is fully installed!"
-    TXT_LAUNCH_PROMPT="🚀 OSINTEL is installed! Do you want to launch it now? (Y/N)"
-    TXT_LAUNCHING="🚀 Launching OSINTEL Core System..."
-    TXT_COMPLETED="✅ Installation complete. Run 'python3 core.py' anytime to start OSINTEL."
-    TXT_ERROR="❌ Error: Some dependencies failed to install. Try running the script again."
-fi
-
-# Define colors for a professional UI
+# Define UI Colors
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No color
 
-# Clear the terminal
+# 1️⃣ **CLEAR TERMINAL & DISPLAY OSINTEL BANNER**
 clear
-
-# Display OSINTEL Banner
 echo -e "${CYAN}"
 echo "------------------------------------------------------------"
-echo "   $TXT_BANNER"
+echo "   🔍 OSINTEL - Law Enforcement OSINT Toolkit"
 echo "------------------------------------------------------------"
 echo -e "${NC}"
 sleep 2
 
-# Function for animated progress bar
-progress_bar() {
-    local duration=${1}
-    already_done() { for ((done=0; done<$elapsed; done++)); do printf "▇"; done }
-    remaining() { for ((remain=$elapsed; remain<$duration; remain++)); do printf " "; done }
-    percentage() { printf "| %s%%" $(( (($elapsed)*100)/($duration)*100/100 )); }
-    for ((elapsed=1; elapsed<=$duration; elapsed++)); do
-        already_done; remaining; percentage
-        sleep 0.1
-        printf "\r"
-    done
-    printf "\n"
-}
+# 2️⃣ **SYSTEM COMPATIBILITY CHECK**
+echo -e "${YELLOW}🔍 Checking system compatibility...${NC}"
+sleep 1
 
-echo -e "${YELLOW}$TXT_CHECK_SYSTEM${NC}"
-progress_bar 30
+# Detect OS Type
+OS_TYPE=$(uname -s)
 
-# Check Python3
+# Ensure Python3 is installed
 if ! command -v python3 &> /dev/null; then
-    echo -e "${RED}$TXT_INSTALL_PYTHON${NC}"
-    sudo apt-get install python3 -y
+    echo -e "${RED}❌ Python3 not found! Installing...${NC}"
+    case "$OS_TYPE" in
+        "Linux") sudo apt install python3 -y || sudo yum install python3 -y ;;
+        "Darwin") brew install python3 ;;
+        "MINGW"*) echo "Please install Python3 manually from python.org" && exit 1 ;;
+        *) echo "❌ Unsupported OS. Install Python3 manually." && exit 1 ;;
+    esac
 else
-    echo -e "${GREEN}$TXT_PYTHON_FOUND${NC}"
+    echo -e "${GREEN}✅ Python3 found!${NC}"
 fi
 sleep 1
 
-# Check Pip
-if ! command -v pip &> /dev/null; then
-    echo -e "${RED}$TXT_INSTALL_PIP${NC}"
-    sudo apt-get install python3-pip -y
+# Ensure pip is installed
+if ! command -v pip3 &> /dev/null; then
+    echo -e "${RED}❌ Pip not found! Installing...${NC}"
+    case "$OS_TYPE" in
+        "Linux") sudo apt install python3-pip -y || sudo yum install python3-pip -y ;;
+        "Darwin") brew install python3-pip ;;
+        "MINGW"*) echo "Please install pip manually from python.org" && exit 1 ;;
+        *) echo "❌ Unsupported OS. Install pip manually." && exit 1 ;;
+    esac
 else
-    echo -e "${GREEN}$TXT_PIP_FOUND${NC}"
+    echo -e "${GREEN}✅ Pip found!${NC}"
 fi
 sleep 1
 
-# Check for Virtual Environment Support
+# Ensure virtual environment support
 if ! python3 -m venv --help &> /dev/null; then
-    echo -e "${RED}$TXT_INSTALL_VENV${NC}"
-    sudo apt-get install python3-venv -y
+    echo -e "${RED}❌ Virtual environment module missing! Installing...${NC}"
+    case "$OS_TYPE" in
+        "Linux") sudo apt install python3-venv -y || sudo yum install python3-venv -y ;;
+        "Darwin") brew install python3-venv ;;
+        "MINGW"*) echo "Please install venv manually from python.org" && exit 1 ;;
+        *) echo "❌ Unsupported OS. Install venv manually." && exit 1 ;;
+    esac
 else
-    echo -e "${GREEN}$TXT_VENV_FOUND${NC}"
+    echo -e "${GREEN}✅ Virtual environment support detected!${NC}"
 fi
 sleep 1
 
-# Create & Activate Virtual Environment
-echo -e "${YELLOW}$TXT_SETTING_VENV${NC}"
-progress_bar 20
+# 3️⃣ **ENSURE HOMEBREW IS INSTALLED ON MACOS**
+if [[ "$OS_TYPE" == "Darwin" ]]; then
+    if ! command -v brew &> /dev/null; then
+        echo -e "${YELLOW}🔧 Homebrew not found. Installing...${NC}"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+fi
+
+# 4️⃣ **CREATE & ACTIVATE VIRTUAL ENVIRONMENT**
+echo -e "${YELLOW}⚙️ Setting up virtual environment...${NC}"
 python3 -m venv osintel_env
 source osintel_env/bin/activate
-echo -e "${GREEN}$TXT_VENV_ACTIVATED${NC}"
+echo -e "${GREEN}✅ Virtual environment activated.${NC}"
 sleep 1
 
-# Define required dependencies
-REQUIRED_LIBS=("instaloader" "requests" "telegram" "face_recognition" "nltk" "web3" "blockcypher" "scikit-learn" "pandas" "matplotlib" "flask" "seaborn" "tensorflow" "torch" "reportlab" "opencv-python")
+# 5️⃣ **INSTALL REQUIRED PYTHON LIBRARIES**
+echo -e "${YELLOW}📦 Installing required Python libraries...${NC}"
+REQUIRED_LIBS=("cryptography" "instaloader" "requests" "telegram" "nltk" "web3" "blockcypher" "scikit-learn" "pandas" "matplotlib" "flask" "seaborn" "tensorflow" "torch" "reportlab" "opencv-python")
 
-# Install Dependencies
-echo -e "${YELLOW}$TXT_INSTALLING_LIBS${NC}"
 for LIB in "${REQUIRED_LIBS[@]}"; do
-    python3 -c "import $LIB" 2>/dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "${CYAN}📥 Installing $LIB...${NC}"
-        pip install $LIB
+    python3 -m pip install --upgrade pip
+    python3 -m pip install "$LIB" --no-cache-dir
+    if [[ $? -eq 0 ]]; then
+        echo -e "${GREEN}✅ $LIB installed successfully.${NC}"
     else
-        echo -e "${GREEN}✅ $LIB already installed.${NC}"
+        echo -e "${RED}❌ Failed to install $LIB. Please check manually.${NC}"
     fi
 done
 
-# Final Verification
-echo -e "${YELLOW}$TXT_VERIFICATION${NC}"
-progress_bar 15
-if command -v python3 &> /dev/null && command -v pip &> /dev/null; then
-    echo -e "${GREEN}$TXT_SUCCESS${NC}"
+# 6️⃣ **FIX `dlib` & `face_recognition` INSTALLATION ISSUES**
+echo -e "${YELLOW}🔧 Fixing face recognition installation...${NC}"
+
+case "$OS_TYPE" in
+    "Linux")
+        sudo apt update && sudo apt install -y cmake build-essential python3-dev libopenblas-dev liblapack-dev libx11-dev libgtk-3-dev
+        python3 -m pip install dlib face_recognition
+        ;;
+    "Darwin")
+        brew install cmake
+        python3 -m pip install dlib face_recognition
+        ;;
+    "MINGW"*)
+        echo "Please install CMake and Visual Studio Build Tools, then run:"
+        echo "python3 -m pip install dlib face_recognition"
+        ;;
+esac
+
+# 7️⃣ **FINAL VERIFICATION**
+echo -e "${YELLOW}🔎 Verifying installation...${NC}"
+sleep 2
+if command -v python3 &> /dev/null && command -v pip3 &> /dev/null; then
+    echo -e "${GREEN}✅ All system checks passed. OSINTEL is fully installed!${NC}"
 else
-    echo -e "${RED}$TXT_ERROR${NC}"
+    echo -e "${RED}❌ Error: Some dependencies failed to install. Try running the script again.${NC}"
     exit 1
 fi
 
-# Ask user if they want to launch OSINTEL Core System
-echo -e "${CYAN}$TXT_LAUNCH_PROMPT${NC}"
+# 8️⃣ **ASK USER TO LAUNCH OSINTEL**
+echo -e "${CYAN}🚀 OSINTEL is installed! Do you want to launch it now? (Y/N)${NC}"
 read -r launch_choice
 if [[ "$launch_choice" =~ ^[Yy]$ ]]; then
-    echo -e "${YELLOW}$TXT_LAUNCHING${NC}"
+    echo -e "${YELLOW}🚀 Launching OSINTEL Core System...${NC}"
     sleep 1
     python3 core.py
 else
-    echo -e "${GREEN}$TXT_COMPLETED${NC}"
+    echo -e "${GREEN}✅ Installation complete. Run 'python3 core.py' anytime to start OSINTEL.${NC}"
 fi

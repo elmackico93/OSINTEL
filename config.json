@@ -1,0 +1,15 @@
+{
+    "telegram": {
+        "bot_token": "",
+        "chat_id": ""
+    },
+    "api_keys": {
+        "blockcypher": "",
+        "face_recognition": "",
+        "nltk": ""
+    },
+    "system": {
+        "language": "en",
+        "debug_mode": false
+    }
+}
