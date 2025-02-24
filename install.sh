@@ -4,10 +4,10 @@
 # Fully Interactive, Animated, & Self-Repairing Setup for All Systems
 
 # Define UI Colors
-CYAN='\033[0;36m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-RED='\033[0;31m'
+CYAN='\033[1;36m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+RED='\033[1;31m'
 NC='\033[0m' # No color
 
 # 1️⃣ **CLEAR TERMINAL & DISPLAY OSINTEL BANNER**
@@ -30,7 +30,7 @@ OS_TYPE=$(uname -s)
 if ! command -v python3 &> /dev/null; then
     echo -e "${RED}❌ Python3 not found! Installing...${NC}"
     case "$OS_TYPE" in
-        "Linux") sudo apt install python3 -y || sudo yum install python3 -y ;;
+        "Linux") sudo apt install python3-full -y || sudo yum install python3 -y ;;
         "Darwin") brew install python3 ;;
         "MINGW"*) echo "Please install Python3 manually from python.org" && exit 1 ;;
         *) echo "❌ Unsupported OS. Install Python3 manually." && exit 1 ;;
@@ -54,6 +54,12 @@ else
 fi
 sleep 1
 
+# 3️⃣ **FIX PEP 668 (EXTERNALLY MANAGED ENVIRONMENT ERROR)**
+if python3 -m pip install --help 2>&1 | grep -q "externally-managed-environment"; then
+    echo -e "${YELLOW}🔧 Fixing PEP 668 Restrictions...${NC}"
+    sudo apt install python3-venv -y
+fi
+
 # Ensure virtual environment support
 if ! python3 -m venv --help &> /dev/null; then
     echo -e "${RED}❌ Virtual environment module missing! Installing...${NC}"
@@ -67,15 +73,6 @@ else
     echo -e "${GREEN}✅ Virtual environment support detected!${NC}"
 fi
 sleep 1
-
-# 3️⃣ **ENSURE HOMEBREW IS INSTALLED ON MACOS**
-if [[ "$OS_TYPE" == "Darwin" ]]; then
-    if ! command -v brew &> /dev/null; then
-        echo -e "${YELLOW}🔧 Homebrew not found. Installing...${NC}"
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-    fi
-fi
 
 # 4️⃣ **CREATE & ACTIVATE VIRTUAL ENVIRONMENT**
 echo -e "${YELLOW}⚙️ Setting up virtual environment...${NC}"
@@ -98,25 +95,7 @@ for LIB in "${REQUIRED_LIBS[@]}"; do
     fi
 done
 
-# 6️⃣ **FIX `dlib` & `face_recognition` INSTALLATION ISSUES**
-echo -e "${YELLOW}🔧 Fixing face recognition installation...${NC}"
-
-case "$OS_TYPE" in
-    "Linux")
-        sudo apt update && sudo apt install -y cmake build-essential python3-dev libopenblas-dev liblapack-dev libx11-dev libgtk-3-dev
-        python3 -m pip install dlib face_recognition
-        ;;
-    "Darwin")
-        brew install cmake
-        python3 -m pip install dlib face_recognition
-        ;;
-    "MINGW"*)
-        echo "Please install CMake and Visual Studio Build Tools, then run:"
-        echo "python3 -m pip install dlib face_recognition"
-        ;;
-esac
-
-# 7️⃣ **FINAL VERIFICATION**
+# 6️⃣ **FINAL VERIFICATION**
 echo -e "${YELLOW}🔎 Verifying installation...${NC}"
 sleep 2
 if command -v python3 &> /dev/null && command -v pip3 &> /dev/null; then
@@ -126,7 +105,7 @@ else
     exit 1
 fi
 
-# 8️⃣ **ASK USER TO LAUNCH OSINTEL**
+# 7️⃣ **ASK USER TO LAUNCH OSINTEL**
 echo -e "${CYAN}🚀 OSINTEL is installed! Do you want to launch it now? (Y/N)${NC}"
 read -r launch_choice
 if [[ "$launch_choice" =~ ^[Yy]$ ]]; then
