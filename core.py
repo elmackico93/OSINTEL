@@ -1,3 +1,15 @@
+import sys
+import os
+
+# Ensure OSINTEL uses the correct virtual environment
+VENV_PATH = os.path.join(os.path.dirname(__file__), "osintel_env", "bin", "python3")
+if os.path.exists(VENV_PATH):
+    sys.executable = VENV_PATH
+    print(f"🔍 Using Python interpreter: {sys.executable}")
+else:
+    print("⚠️ WARNING: Virtual environment not found! Ensure `osintel_env` is activated.")
+
+
 import os
 import importlib
 import traceback
