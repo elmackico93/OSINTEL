@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 🚀 OSINTEL INSTALLATION SCRIPT 🚀
-# Fully Interactive, Animated, & Self-Repairing Setup for All Systems
+# Fully Interactive, Automated & PEP 668-Proof Installation for Ubuntu/Debian
 
 # Define UI Colors
 CYAN='\033[1;36m'
@@ -70,7 +70,10 @@ sleep 1
 # 4️⃣ **FIX PEP 668 (EXTERNALLY MANAGED ENVIRONMENT ERROR)**
 if python3 -m pip install --help 2>&1 | grep -q "externally-managed-environment"; then
     echo -e "${YELLOW}🔧 Fixing PEP 668 Restrictions...${NC}"
-    sudo apt install python3-venv -y
+    sudo apt install python3-venv python3-full pipx -y
+    export PIPX_HOME=$HOME/.local/pipx
+    export PIPX_BIN_DIR=$PIPX_HOME/bin
+    export PATH="$PIPX_BIN_DIR:$PATH"
 fi
 
 # Ensure virtual environment support
@@ -96,7 +99,7 @@ sleep 1
 
 # 6️⃣ **INSTALL REQUIRED PYTHON LIBRARIES INSIDE VENV**
 echo -e "${YELLOW}📦 Installing required Python libraries inside virtual environment...${NC}"
-REQUIRED_LIBS=("cryptography" "instaloader" "requests" "telegram" "nltk" "web3" "blockcypher" "scikit-learn" "pandas" "matplotlib" "flask" "seaborn" "tensorflow" "torch" "reportlab" "opencv-python")
+REQUIRED_LIBS=("cryptography" "instaloader" "requests" "telegram" "nltk" "web3" "blockcypher" "scikit-learn" "pandas" "matplotlib" "flask" "seaborn" "tensorflow" "torch" "reportlab" "opencv-python" "joblib" "beautifulsoup4")
 
 for LIB in "${REQUIRED_LIBS[@]}"; do
     python3 -m pip install --upgrade pip
