@@ -39,7 +39,7 @@ echo -e "${YELLOW}🔍 Checking system compatibility...${NC}"
 progress_bar 10
 sleep 1
 
-# Ensure Python3, pip, and virtual environment tools are installed
+# Hide apt output and install necessary packages
 sudo apt update -y > /dev/null 2>&1
 sudo apt install -y python3-full python3-pip python3-venv pipx > /dev/null 2>&1
 
