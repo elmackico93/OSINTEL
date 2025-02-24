@@ -1,10 +1,7 @@
-# modules/manage_datasets.py
-
+import os
 import json
 
 DATASET_CONFIG_FILE = "models/datasets.json"
-
-description = "Dataset Manager (Add/Remove OSINT Datasets)"
 
 def load_datasets():
     """Loads dataset configurations dynamically."""
