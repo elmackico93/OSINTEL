@@ -54,7 +54,20 @@ else
 fi
 sleep 1
 
-# 3️⃣ **FIX PEP 668 (EXTERNALLY MANAGED ENVIRONMENT ERROR)**
+# 3️⃣ **ENSURE PIPX IS INSTALLED (FOR SAFE PACKAGE MANAGEMENT)**
+if ! command -v pipx &> /dev/null; then
+    echo -e "${YELLOW}🔧 Installing pipx to manage Python packages...${NC}"
+    case "$OS_TYPE" in
+        "Linux") sudo apt install pipx -y && pipx ensurepath ;;
+        "Darwin") brew install pipx && pipx ensurepath ;;
+        "MINGW"*) echo "Please install pipx manually from python.org" && exit 1 ;;
+    esac
+else
+    echo -e "${GREEN}✅ Pipx found!${NC}"
+fi
+sleep 1
+
+# 4️⃣ **FIX PEP 668 (EXTERNALLY MANAGED ENVIRONMENT ERROR)**
 if python3 -m pip install --help 2>&1 | grep -q "externally-managed-environment"; then
     echo -e "${YELLOW}🔧 Fixing PEP 668 Restrictions...${NC}"
     sudo apt install python3-venv -y
@@ -74,15 +87,15 @@ else
 fi
 sleep 1
 
-# 4️⃣ **CREATE & ACTIVATE VIRTUAL ENVIRONMENT**
+# 5️⃣ **CREATE & ACTIVATE VIRTUAL ENVIRONMENT**
 echo -e "${YELLOW}⚙️ Setting up virtual environment...${NC}"
 python3 -m venv osintel_env
 source osintel_env/bin/activate
 echo -e "${GREEN}✅ Virtual environment activated.${NC}"
 sleep 1
 
-# 5️⃣ **INSTALL REQUIRED PYTHON LIBRARIES**
-echo -e "${YELLOW}📦 Installing required Python libraries...${NC}"
+# 6️⃣ **INSTALL REQUIRED PYTHON LIBRARIES INSIDE VENV**
+echo -e "${YELLOW}📦 Installing required Python libraries inside virtual environment...${NC}"
 REQUIRED_LIBS=("cryptography" "instaloader" "requests" "telegram" "nltk" "web3" "blockcypher" "scikit-learn" "pandas" "matplotlib" "flask" "seaborn" "tensorflow" "torch" "reportlab" "opencv-python")
 
 for LIB in "${REQUIRED_LIBS[@]}"; do
@@ -95,7 +108,7 @@ for LIB in "${REQUIRED_LIBS[@]}"; do
     fi
 done
 
-# 6️⃣ **FINAL VERIFICATION**
+# 7️⃣ **FINAL VERIFICATION**
 echo -e "${YELLOW}🔎 Verifying installation...${NC}"
 sleep 2
 if command -v python3 &> /dev/null && command -v pip3 &> /dev/null; then
@@ -105,7 +118,7 @@ else
     exit 1
 fi
 
-# 7️⃣ **ASK USER TO LAUNCH OSINTEL**
+# 8️⃣ **ASK USER TO LAUNCH OSINTEL**
 echo -e "${CYAN}🚀 OSINTEL is installed! Do you want to launch it now? (Y/N)${NC}"
 read -r launch_choice
 if [[ "$launch_choice" =~ ^[Yy]$ ]]; then
