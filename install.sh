@@ -19,7 +19,7 @@ echo "------------------------------------------------------------"
 echo -e "${NC}"
 sleep 2
 
-# Progress Bar Function
+# Progress Bar Function (Main)
 progress_bar() {
     local current=$1
     local total=$2
@@ -30,6 +30,18 @@ progress_bar() {
     echo -ne "\r["
     for ((i = 0; i < filled_length; i++)); do echo -ne "█"; done
     for ((i = filled_length; i < bar_length; i++)); do echo -ne "-"; done
+    echo -ne "] $percent% "
+}
+
+# Sub Progress Bar Function (Compact Box Below)
+sub_progress_bar() {
+    local current=$1
+    local total=$2
+    local percent=$((current * 100 / total))
+    
+    echo -ne "\n📦 ["
+    for ((i = 0; i < percent / 5; i++)); do echo -ne "█"; done
+    for ((i = percent / 5; i < 20; i++)); do echo -ne "-"; done
     echo -ne "] $percent% - $3"
 }
 
@@ -38,27 +50,27 @@ OS_TYPE=$(uname -s)
 
 # 2️⃣ **CHECK SYSTEM COMPATIBILITY**
 echo -e "${YELLOW}🔍 Checking system compatibility...${NC}"
-progress_bar 0 5 "Checking system..."
+progress_bar 0 5
 sleep 1
 
 # Hide apt output and install necessary packages
 sudo apt update -y > /dev/null 2>&1
-progress_bar 1 5 "Updating package lists..."
+progress_bar 1 5
 sleep 1
 
 sudo apt install -y python3-full python3-pip python3-venv pipx > /dev/null 2>&1
-progress_bar 2 5 "Installing Python3, pip, venv, and pipx..."
+progress_bar 2 5
 sleep 1
 
 # 3️⃣ **CREATE & ACTIVATE VIRTUAL ENVIRONMENT**
 echo -e "${YELLOW}\n⚙️ Setting up virtual environment...${NC}"
-progress_bar 3 5 "Creating virtual environment..."
+progress_bar 3 5
 python3 -m venv osintel_env
 source osintel_env/bin/activate
-progress_bar 4 5 "Virtual environment activated."
+progress_bar 4 5
 sleep 1
 
-# 4️⃣ **INSTALL REQUIRED PYTHON LIBRARIES WITH FIXED PROGRESS BAR**
+# 4️⃣ **INSTALL REQUIRED PYTHON LIBRARIES WITH FIXED PROGRESS BAR & SUB-BAR**
 echo -e "${YELLOW}\n📦 Installing required Python libraries...${NC}"
 
 REQUIRED_LIBS=("cryptography" "instaloader" "requests" "telegram" "nltk" "web3" "blockcypher" "scikit-learn" "pandas" "matplotlib" "flask" "seaborn" "tensorflow" "torch" "reportlab" "opencv-python" "joblib" "beautifulsoup4" "face_recognition")
@@ -71,15 +83,25 @@ echo -e "\n🔽 **Overall Installation Progress**"
 
 for LIB in "${REQUIRED_LIBS[@]}"; do
     current_package=$((current_package + 1))
-    progress_bar "$current_package" "$total_packages" "Installing $LIB..."
-    python3 -m pip install "$LIB" --no-cache-dir > /dev/null 2>&1
     
+    # Display Main Progress Bar
+    progress_bar "$current_package" "$total_packages"
+
+    # Display Compact Sub Progress Bar Below
+    for ((j = 0; j <= 100; j += 10)); do
+        sub_progress_bar "$j" "100" "Installing $LIB..."
+        sleep 0.1
+    done
+    
+    # Install the package
+    python3 -m pip install "$LIB" --no-cache-dir > /dev/null 2>&1
+
     if [[ $? -ne 0 ]]; then
         ERRORS+=("$LIB")
     fi
 done
 
-progress_bar "$total_packages" "$total_packages" "Installation Complete!"
+progress_bar "$total_packages" "$total_packages"
 echo ""
 
 # 5️⃣ **DISPLAY ERROR TABLE IF ANY LIBRARY FAILED**
